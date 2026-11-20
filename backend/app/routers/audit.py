@@ -1,0 +1,25 @@
+from fastapi import APIRouter, Depends
+
+from app.approval.store import list_records
+from app.audit.store import load_audit
+from app.auth import get_user
+
+router = APIRouter(tags=["Audit"])
+
+
+@router.get("/api/v1/audit")
+def list_audit(user: dict = Depends(get_user)):
+    events = load_audit()
+    if user["role"] not in {"reviewer", "admin"}:
+        owned = {
+            r["check_id"]
+            for r in list_records()
+            if r.get("creator_id") == user["user_id"]
+        }
+        events = [event for event in events if event["check_id"] in owned]
+    events = sorted(
+        events,
+        key=lambda e: e.get("timestamp") or "",
+        reverse=True,
+    )
+    return {"total": len(events), "events": events}
