@@ -14,7 +14,7 @@ BrandGuard is a mobile-first brand governance platform where creators draft or u
 
 ---
 
-## 1. What's New in Round 3 (v3.0.0)
+## 1. What's New in Round 3 (v3.0.0)...
 
 ### 3 Core Governance Improvements
 1. **No Finding Without Evidence (Server-Side Grounding Gate)**
