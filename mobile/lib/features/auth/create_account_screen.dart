@@ -1,45 +1,8 @@
-import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../app/app_theme.dart';
 import '../../app/ui/app_widgets.dart';
 import '../../core/network/brandguard_api_service.dart';
-
-/// Public evaluation accounts shown on this screen so reviewers can try both
-/// roles. These are ordinary hosted accounts: nothing here creates or elevates
-/// a user, and the backend still decides the role from provider metadata.
-class _DemoCredential {
-  const _DemoCredential({
-    required this.label,
-    required this.name,
-    required this.email,
-    required this.password,
-    required this.icon,
-  });
-
-  final String label;
-  final String name;
-  final String email;
-  final String password;
-  final IconData icon;
-}
-
-const List<_DemoCredential> _demoCredentials = [
-  _DemoCredential(
-    label: 'Creator',
-    name: 'Smeet',
-    email: 'smeet@gmail.com',
-    password: '1234567890',
-    icon: Icons.edit_note_rounded,
-  ),
-  _DemoCredential(
-    label: 'Reviewer',
-    name: 'Omkar',
-    email: 'omkar@gmail.com',
-    password: 'omkar@123',
-    icon: Icons.fact_check_outlined,
-  ),
-];
 
 /// Account creation. Organisation name is captured for context only: the
 /// backend contract accepts name/email/password, and roles can never be
@@ -143,59 +106,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     }
   }
 
-  /// Copies the credentials so an evaluator can paste them on the sign-in
-  /// screen. This deliberately does not create anything or navigate away.
-  void _useDemoAccount(_DemoCredential account) {
-    Clipboard.setData(
-      ClipboardData(text: '${account.email} / ${account.password}'),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          '${account.label} credentials copied — now tap Sign in below',
-        ),
-      ),
-    );
-  }
-
-  Widget _demoAccessCard() {
-    AppTheme.watch(context);
-    return SurfaceCard(
-      padding: const EdgeInsets.fromLTRB(14, 13, 10, 6),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.key_rounded, size: 18, color: AppTheme.tealText),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text('Demo accounts', style: AppTheme.labelLarge),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 4),
-                child: Text('TAP TO COPY', style: AppTheme.monoLabel()),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Tap an account to copy its credentials, then use Sign in below.',
-            style: AppTheme.bodySmall,
-          ),
-          const SizedBox(height: 6),
-          for (final account in _demoCredentials)
-            _DemoCredentialRow(
-              key: ValueKey('demo-credential-${account.label.toLowerCase()}'),
-              account: account,
-              onTap: () => _useDemoAccount(account),
-            ),
-        ],
-      ),
-    );
-  }
-
-
   @override
   Widget build(BuildContext context) {
     AppTheme.watch(context);
@@ -233,8 +143,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
               ),
             ),
             const SizedBox(height: 18),
-            _demoAccessCard(),
-            const SizedBox(height: 14),
             const InlineNotice(
               tone: Tone.info,
               title: 'Default creator access',
@@ -433,93 +341,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
               ],
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-/// One tappable credential row inside the demo accounts card.
-class _DemoCredentialRow extends StatelessWidget {
-  const _DemoCredentialRow({
-    super.key,
-    required this.account,
-    required this.onTap,
-  });
-
-  final _DemoCredential account;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    AppTheme.watch(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(10, 9, 8, 9),
-            decoration: BoxDecoration(
-              color: AppTheme.cardAlt,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppTheme.border),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: AppTheme.mint,
-                    borderRadius: BorderRadius.circular(9),
-                  ),
-                  child: Icon(account.icon, size: 17, color: AppTheme.tealText),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              '${account.label} · ${account.name}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTheme.labelLarge,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        account.email,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTheme.monoLabel(color: AppTheme.ink),
-                      ),
-                      Text(
-                        account.password,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTheme.monoLabel(color: AppTheme.tealText),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 13,
-                  color: AppTheme.muted,
-                ),
-                const SizedBox(width: 4),
-              ],
-            ),
-          ),
         ),
       ),
     );
