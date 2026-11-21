@@ -128,7 +128,6 @@ When running locally with `backend/.env` unset (or `SEED_DEMO_USERS=true`), two 
 - For hosted access, use **Create account → confirm email → Sign In** (grants Creator), and promote a trusted Reviewer/Admin via Supabase `app_metadata.brandguard_role` or `python manage.py create-user`. See [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md).
 
 ---
-
 ## 4. API Overview
 
 All private endpoints require `Authorization: Bearer ACCESS_TOKEN`. Full OpenAPI schemas are available at `/docs` when running locally.
