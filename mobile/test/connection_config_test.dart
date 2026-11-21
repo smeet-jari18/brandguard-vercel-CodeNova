@@ -33,7 +33,7 @@ void main() {
     TargetPlatform.macOS,
   ]) {
     test(
-      '$platform native default stays on device loopback until configured',
+      '$platform native default never silently selects emulator localhost',
       () {
         debugDefaultTargetPlatformOverride = platform;
         const override = String.fromEnvironment('API_BASE');
@@ -42,8 +42,8 @@ void main() {
           ApiConfig.resolveBaseUrl(configuredBase: override, isWeb: false),
         );
         if (override.isEmpty) {
-          expect(BrandGuardApiService.baseUrl, ApiConfig.localBaseUrl);
-          expect(Uri.parse(BrandGuardApiService.baseUrl).host, '127.0.0.1');
+          expect(BrandGuardApiService.baseUrl, ApiConfig.hostedBaseUrl);
+          expect(Uri.parse(BrandGuardApiService.baseUrl).scheme, 'https');
         }
       },
     );
@@ -62,9 +62,9 @@ void main() {
       expect(
         ApiConfig.resolveBaseUrl(
           isWeb: true,
-          webOrigin: 'https://unit.example',
+          webOrigin: ApiConfig.hostedBaseUrl,
         ),
-        'https://unit.example',
+        ApiConfig.hostedBaseUrl,
       );
     },
   );

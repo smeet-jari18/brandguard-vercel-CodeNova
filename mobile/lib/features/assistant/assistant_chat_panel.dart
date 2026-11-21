@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../app/app_theme.dart';
 import '../../app/ui/app_widgets.dart';
+import '../../app/ui/chatbot_avatar.dart';
 import '../../core/network/brandguard_api_service.dart';
 
 class AssistantMessage {
@@ -51,8 +52,8 @@ class _AssistantChatBoxState extends State<AssistantChatBox> {
   final _scroll = ScrollController();
   bool _sending = false;
 
-  static const _quickPrompts = <String>[
-    'Summarize Acme rules',
+  List<String> get _quickPrompts => <String>[
+    'Summarize ${widget.brandName} rules',
     'Check copy: Guaranteed 100% instant cure!',
     'What Fact Sources are verified?',
     'Explain 60-min amend & seals',
@@ -149,12 +150,27 @@ class _AssistantChatBoxState extends State<AssistantChatBox> {
       context: context,
       builder: (dialogCtx) => AlertDialog(
         title: const Text('Assistant brand scope'),
-        content: TextField(
-          controller: ctrl,
-          decoration: const InputDecoration(
-            labelText: 'Brand name',
-            hintText: 'Acme',
-          ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Wrap(
+              spacing: 4,
+              children: [
+                for (final brand in ['Acme', 'Zest Foods', 'Skyline Travel'])
+                  TextButton(
+                    onPressed: () => ctrl.text = brand,
+                    child: Text(brand),
+                  ),
+              ],
+            ),
+            TextField(
+              controller: ctrl,
+              decoration: const InputDecoration(
+                labelText: 'Brand name',
+                hintText: 'Acme',
+              ),
+            ),
+          ],
         ),
         actions: [
           TextButton(
@@ -200,11 +216,7 @@ class _AssistantChatBoxState extends State<AssistantChatBox> {
                     color: AppTheme.teal.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(
-                    Icons.auto_awesome_rounded,
-                    size: 18,
-                    color: AppTheme.teal,
-                  ),
+                  child: const ChatbotAvatar(),
                 ),
                 const SizedBox(width: 10),
                 Expanded(

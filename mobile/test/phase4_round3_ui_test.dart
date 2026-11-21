@@ -136,7 +136,7 @@ void main() {
         return http.Response('{}', 200);
       });
 
-      await open(tester, const NewBrandCheckScreen());
+      await open(tester, const NewBrandCheckScreen(initialBrandName: 'Acme'));
 
       await scrollAndEnsure(tester, find.text('INSTAGRAM'));
       await tester.tap(find.text('INSTAGRAM'));
@@ -1046,7 +1046,7 @@ void main() {
         return http.Response('{}', 200);
       });
 
-      await open(tester, const NewBrandCheckScreen());
+      await open(tester, const NewBrandCheckScreen(initialBrandName: 'Acme'));
       expect(
         find.textContaining(
           'Drafted by ${DemoAuth.reviewer.user.name} · ${DemoAuth.reviewer.user.email}',
@@ -1294,6 +1294,16 @@ void main() {
       await tester.tap(find.text('New Brand Check').first);
       await settleTestUi(tester);
 
+      // Fresh checks intentionally start on New brand. This fixture is Acme.
+      await scrollAndEnsure(tester, find.text('Acme'));
+      await tester.tap(find.text('Acme'));
+      await tester.pump();
+      await scrollAndEnsure(tester, find.byKey(const ValueKey('check-brand')));
+      expect(
+        tester.widget<TextField>(find.byKey(const ValueKey('check-brand'))).controller!.text,
+        'Acme',
+      );
+
       await scrollAndEnsure(tester, find.byKey(const ValueKey('check-content')));
       await tester.enterText(
         find.byKey(const ValueKey('check-content')),
@@ -1303,8 +1313,11 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('run-check')));
       await settleTestUi(tester);
 
+      expect(find.byType(FindingsEvidenceScreen), findsOneWidget);
+      await scrollAndEnsure(tester, find.byKey(const ValueKey('submit-authorised-review')));
       await tester.tap(find.byKey(const ValueKey('submit-authorised-review')));
       await settleTestUi(tester);
+      await scrollAndEnsure(tester, find.byKey(const ValueKey('submission-done-to-reviews')));
       await tester.tap(find.byKey(const ValueKey('submission-done-to-reviews')));
       await settleTestUi(tester);
 

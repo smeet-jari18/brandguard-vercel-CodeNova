@@ -6,5 +6,4 @@ if ! command -v flutter >/dev/null 2>&1; then
   exit 1
 fi
 flutter pub get --enforce-lockfile
-: "${API_BASE:?Set API_BASE to your backend URL}"
-exec flutter run "--dart-define=API_BASE=$API_BASE"
+exec flutter run "--dart-define=API_BASE=${API_BASE:-https://brandguard-vercel-code-nova.vercel.app}"

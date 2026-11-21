@@ -44,5 +44,6 @@ Thumbs.db
 *.log
 *.swp
 
-.vercel/
-/public/
+# Demo maintenance exports: may contain private user content / password hashes.
+.demo-private/
+backend/.demo-private/

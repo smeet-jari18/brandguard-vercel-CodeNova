@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../app_theme.dart';
 import 'app_widgets.dart';
+import 'chatbot_avatar.dart';
 import '../../core/auth/session.dart';
 import '../../core/network/brandguard_api_service.dart';
 import '../../features/assistant/assistant_chat_panel.dart';
@@ -180,7 +181,7 @@ class _BrandGuardShellState extends State<BrandGuardShell> {
               backgroundColor: AppTheme.navy,
               foregroundColor: Colors.white,
               elevation: 4,
-              child: const Icon(Icons.chat_bubble_outline_rounded, size: 22),
+              child: const ChatbotAvatar(size: 44),
             ),
       bottomNavigationBar: _BottomBar(
         index: _index,

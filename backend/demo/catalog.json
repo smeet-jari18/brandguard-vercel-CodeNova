@@ -1,0 +1,281 @@
+{
+  "version": 1,
+  "brands": [
+    {
+      "name": "Acme",
+      "slug": "acme",
+      "category": "Digital services",
+      "guideline": {
+        "title": "Acme \u2014 Clear, credible product communication",
+        "brand_name": "Acme",
+        "content": "Fictional demonstration brand. Explain capabilities without unsupported superiority, permanent pricing promises, absolute security, or guaranteed outcomes.",
+        "description": "Fictional demonstration brand. Explain capabilities without unsupported superiority, permanent pricing promises, absolute security, or guaranteed outcomes.",
+        "enabled": true,
+        "verified": false
+      },
+      "rules": [
+        {
+          "rule_id": "ACME-001",
+          "title": "Restricted Phrase",
+          "brand_name": "Acme",
+          "category": "Digital services",
+          "rule_type": "regex",
+          "pattern": "\\bfree forever\\b",
+          "severity": "review",
+          "rule_text": "Promotional copy must not promise permanent free access using phrases like free forever unless explicitly backed by a currently approved lifetime offer.",
+          "rule_quote": "must not promise permanent free access using phrases like free forever",
+          "description": "Do not use the phrase \"free forever\" in Acme promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "suggestion": "Avoid promising permanent free access unless this is an approved offer.",
+          "enabled": true,
+          "verified": false,
+          "effective_from": "2024-01-01T00:00:00+00:00",
+          "channels": [
+            "all"
+          ]
+        },
+        {
+          "rule_id": "ACME-002",
+          "title": "Unapproved Superlative",
+          "brand_name": "Acme",
+          "category": "Digital services",
+          "rule_type": "regex",
+          "pattern": "\\bbest in the world\\b",
+          "severity": "warning",
+          "rule_text": "Brand communications must not use unsubstantiated superlatives such as best in the world; replace them with factual, verifiable product descriptions.",
+          "rule_quote": "must not use unsubstantiated superlatives such as best in the world",
+          "description": "Do not use the phrase \"best in the world\" in Acme promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "suggestion": "Replace unsupported superlatives with a factual description.",
+          "enabled": true,
+          "verified": false,
+          "effective_from": "2024-01-01T00:00:00+00:00",
+          "channels": [
+            "all"
+          ]
+        },
+        {
+          "rule_id": "ACME-003",
+          "title": "Guaranteed outcomes",
+          "brand_name": "Acme",
+          "category": "Digital services",
+          "rule_type": "regex",
+          "pattern": "(?<!\\w)guaranteed\\ results(?!\\w)",
+          "severity": "review",
+          "rule_text": "Do not use the phrase \"guaranteed results\" in Acme promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "rule_quote": "Do not use the phrase \"guaranteed results\" in Acme promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "description": "Do not use the phrase \"guaranteed results\" in Acme promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "suggestion": "Use a specific, supportable description; inspect the applicable policy.",
+          "enabled": true,
+          "verified": false,
+          "effective_from": "2024-01-01T00:00:00+00:00",
+          "channels": [
+            "all"
+          ]
+        },
+        {
+          "rule_id": "ACME-004",
+          "title": "Absolute security",
+          "brand_name": "Acme",
+          "category": "Digital services",
+          "rule_type": "regex",
+          "pattern": "(?<!\\w)100%\\ secure(?!\\w)",
+          "severity": "review",
+          "rule_text": "Do not use the phrase \"100% secure\" in Acme promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "rule_quote": "Do not use the phrase \"100% secure\" in Acme promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "description": "Do not use the phrase \"100% secure\" in Acme promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "suggestion": "Use a specific, supportable description; inspect the applicable policy.",
+          "enabled": true,
+          "verified": false,
+          "effective_from": "2024-01-01T00:00:00+00:00",
+          "channels": [
+            "all"
+          ]
+        }
+      ],
+      "clean_copy": "Bring your team's daily work into focus with Acme. Explore available features and choose the plan that fits your workflow."
+    },
+    {
+      "name": "Zest Foods",
+      "slug": "zest_foods",
+      "category": "Packaged food",
+      "guideline": {
+        "title": "Zest Foods \u2014 Responsible food marketing",
+        "brand_name": "Zest Foods",
+        "content": "Fictional demonstration brand. Avoid disease-treatment or guaranteed health outcomes. Never invent nutrition, ingredient, allergen, or certification information. These fictional demo restrictions are not full regulatory validation.",
+        "description": "Fictional demonstration brand. Avoid disease-treatment or guaranteed health outcomes. Never invent nutrition, ingredient, allergen, or certification information. These fictional demo restrictions are not full regulatory validation.",
+        "enabled": true,
+        "verified": false
+      },
+      "rules": [
+        {
+          "rule_id": "ZEST-001",
+          "title": "Disease-treatment claim",
+          "brand_name": "Zest Foods",
+          "category": "Packaged food",
+          "rule_type": "regex",
+          "pattern": "(?<!\\w)cure\\ diabetes(?!\\w)",
+          "severity": "review",
+          "rule_text": "Do not use the phrase \"cure diabetes\" in Zest Foods promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "rule_quote": "Do not use the phrase \"cure diabetes\" in Zest Foods promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "description": "Do not use the phrase \"cure diabetes\" in Zest Foods promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "suggestion": "Use a specific, supportable description; inspect the applicable policy.",
+          "enabled": true,
+          "verified": false,
+          "effective_from": "2024-01-01T00:00:00+00:00",
+          "channels": [
+            "all"
+          ]
+        },
+        {
+          "rule_id": "ZEST-002",
+          "title": "Guaranteed health outcome",
+          "brand_name": "Zest Foods",
+          "category": "Packaged food",
+          "rule_type": "regex",
+          "pattern": "(?<!\\w)guaranteed\\ weight\\ loss(?!\\w)",
+          "severity": "review",
+          "rule_text": "Do not use the phrase \"guaranteed weight loss\" in Zest Foods promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "rule_quote": "Do not use the phrase \"guaranteed weight loss\" in Zest Foods promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "description": "Do not use the phrase \"guaranteed weight loss\" in Zest Foods promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "suggestion": "Use a specific, supportable description; inspect the applicable policy.",
+          "enabled": true,
+          "verified": false,
+          "effective_from": "2024-01-01T00:00:00+00:00",
+          "channels": [
+            "all"
+          ]
+        },
+        {
+          "rule_id": "ZEST-003",
+          "title": "Nutrition claim restriction",
+          "brand_name": "Zest Foods",
+          "category": "Packaged food",
+          "rule_type": "regex",
+          "pattern": "(?<!\\w)zero\\ sugar(?!\\w)",
+          "severity": "warning",
+          "rule_text": "Do not use the phrase \"zero sugar\" in Zest Foods promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "rule_quote": "Do not use the phrase \"zero sugar\" in Zest Foods promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "description": "Do not use the phrase \"zero sugar\" in Zest Foods promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "suggestion": "Use a specific, supportable description; inspect the applicable policy.",
+          "enabled": true,
+          "verified": false,
+          "effective_from": "2024-01-01T00:00:00+00:00",
+          "channels": [
+            "all"
+          ]
+        },
+        {
+          "rule_id": "ZEST-004",
+          "title": "Certification claim restriction",
+          "brand_name": "Zest Foods",
+          "category": "Packaged food",
+          "rule_type": "regex",
+          "pattern": "(?<!\\w)100%\\ organic(?!\\w)",
+          "severity": "warning",
+          "rule_text": "Do not use the phrase \"100% organic\" in Zest Foods promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "rule_quote": "Do not use the phrase \"100% organic\" in Zest Foods promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "description": "Do not use the phrase \"100% organic\" in Zest Foods promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "suggestion": "Use a specific, supportable description; inspect the applicable policy.",
+          "enabled": true,
+          "verified": false,
+          "effective_from": "2024-01-01T00:00:00+00:00",
+          "channels": [
+            "all"
+          ]
+        }
+      ],
+      "clean_copy": "Discover Zest Foods snacks for your next break. Review the product information for ingredients and nutrition details before choosing."
+    },
+    {
+      "name": "Skyline Travel",
+      "slug": "skyline_travel",
+      "category": "Travel booking",
+      "guideline": {
+        "title": "Skyline Travel \u2014 Transparent booking communication",
+        "brand_name": "Skyline Travel",
+        "content": "Fictional demonstration brand. Do not invent visa outcomes, refund promises, price guarantees, or cancellation entitlements. Direct travelers to actual booking terms and destination requirements.",
+        "description": "Fictional demonstration brand. Do not invent visa outcomes, refund promises, price guarantees, or cancellation entitlements. Direct travelers to actual booking terms and destination requirements.",
+        "enabled": true,
+        "verified": false
+      },
+      "rules": [
+        {
+          "rule_id": "SKY-001",
+          "title": "Visa outcome guarantee",
+          "brand_name": "Skyline Travel",
+          "category": "Travel booking",
+          "rule_type": "regex",
+          "pattern": "(?<!\\w)guaranteed\\ visa\\ approval(?!\\w)",
+          "severity": "review",
+          "rule_text": "Do not use the phrase \"guaranteed visa approval\" in Skyline Travel promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "rule_quote": "Do not use the phrase \"guaranteed visa approval\" in Skyline Travel promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "description": "Do not use the phrase \"guaranteed visa approval\" in Skyline Travel promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "suggestion": "Use a specific, supportable description; inspect the applicable policy.",
+          "enabled": true,
+          "verified": false,
+          "effective_from": "2024-01-01T00:00:00+00:00",
+          "channels": [
+            "all"
+          ]
+        },
+        {
+          "rule_id": "SKY-002",
+          "title": "Refund guarantee",
+          "brand_name": "Skyline Travel",
+          "category": "Travel booking",
+          "rule_type": "regex",
+          "pattern": "(?<!\\w)100%\\ refund(?!\\w)",
+          "severity": "review",
+          "rule_text": "Do not use the phrase \"100% refund\" in Skyline Travel promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "rule_quote": "Do not use the phrase \"100% refund\" in Skyline Travel promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "description": "Do not use the phrase \"100% refund\" in Skyline Travel promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "suggestion": "Use a specific, supportable description; inspect the applicable policy.",
+          "enabled": true,
+          "verified": false,
+          "effective_from": "2024-01-01T00:00:00+00:00",
+          "channels": [
+            "all"
+          ]
+        },
+        {
+          "rule_id": "SKY-003",
+          "title": "Absolute price guarantee",
+          "brand_name": "Skyline Travel",
+          "category": "Travel booking",
+          "rule_type": "regex",
+          "pattern": "(?<!\\w)lowest\\ price\\ guaranteed(?!\\w)",
+          "severity": "review",
+          "rule_text": "Do not use the phrase \"lowest price guaranteed\" in Skyline Travel promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "rule_quote": "Do not use the phrase \"lowest price guaranteed\" in Skyline Travel promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "description": "Do not use the phrase \"lowest price guaranteed\" in Skyline Travel promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "suggestion": "Use a specific, supportable description; inspect the applicable policy.",
+          "enabled": true,
+          "verified": false,
+          "effective_from": "2024-01-01T00:00:00+00:00",
+          "channels": [
+            "all"
+          ]
+        },
+        {
+          "rule_id": "SKY-004",
+          "title": "Unconditional cancellation",
+          "brand_name": "Skyline Travel",
+          "category": "Travel booking",
+          "rule_type": "regex",
+          "pattern": "(?<!\\w)free\\ cancellation\\ anytime(?!\\w)",
+          "severity": "review",
+          "rule_text": "Do not use the phrase \"free cancellation anytime\" in Skyline Travel promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "rule_quote": "Do not use the phrase \"free cancellation anytime\" in Skyline Travel promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "description": "Do not use the phrase \"free cancellation anytime\" in Skyline Travel promotional copy under this fictional demonstration policy. Use specific, supportable descriptions and the actual applicable terms instead.",
+          "suggestion": "Use a specific, supportable description; inspect the applicable policy.",
+          "enabled": true,
+          "verified": false,
+          "effective_from": "2024-01-01T00:00:00+00:00",
+          "channels": [
+            "all"
+          ]
+        }
+      ],
+      "clean_copy": "Plan your next journey with Skyline Travel. Compare available options and review visa requirements, refund terms, and cancellation conditions before booking."
+    }
+  ]
+}

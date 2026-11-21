@@ -9,8 +9,7 @@ if errorlevel 1 (
 )
 call flutter pub get --enforce-lockfile
 if errorlevel 1 goto failed
-if not defined API_BASE set /p "API_BASE=Enter your backend URL: "
-if not defined API_BASE exit /b 1
+if not defined API_BASE set "API_BASE=https://brandguard-vercel-code-nova.vercel.app"
 call flutter run "--dart-define=API_BASE=%API_BASE%"
 if errorlevel 1 goto failed
 exit /b 0

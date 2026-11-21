@@ -27,7 +27,7 @@ Flutter mobile-first client (*Executive Precision* design system) connecting to 
 
 ### Prerequisites
 - **Flutter 3.50.0 / Dart `^3.14.0`**
-- Running backend (pass its URL via `--dart-define=API_BASE=...`)
+- Running backend (`https://brandguard-app.antideploy.app` by default for native builds, or local backend via `--dart-define=API_BASE=...`)
 
 ### Android / iOS / Emulator
 ```bash
@@ -35,8 +35,8 @@ cd mobile
 flutter clean
 flutter pub get --enforce-lockfile
 
-# Replace with your deployed domain:
-flutter run --dart-define=API_BASE=https://YOUR-PROJECT.vercel.app
+# Native default (hosted API):
+flutter run
 
 # Local backend on Android emulator:
 flutter run --dart-define=API_BASE=http://10.0.2.2:8000

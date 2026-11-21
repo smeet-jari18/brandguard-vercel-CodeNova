@@ -48,7 +48,7 @@ CodeNova/
   ENABLE_AI.bat                         Windows interactive AI configuration + live verification launcher
   browser_preview/                      Compiled Flutter `--no-web-resources-cdn` output served same-origin by `app.web`
   docs/                                 Project, AI, and Supabase guides
-  validation/                           Historical v2.0.1 validation evidence
+  validation/                           Historical v2.0.1 / Antideploy validation evidence
   Dockerfile / serve.py                 Production non-root Python 3.13 + tesseract-ocr container & entrypoint
   start_backend.py                      Local Python 3.11+ venv setup & Uvicorn launcher
 ```

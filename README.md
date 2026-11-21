@@ -7,7 +7,7 @@ BrandGuard is a mobile-first brand governance platform where creators draft or u
 | | |
 |---|---|
 | **Active Default Mode** | Local FastAPI + SQLite (`AUTH_PROVIDER=local`) · *Supabase cloud mode optional/deferred* |
-| **Hosted Web App** | [Deploy your instance on Vercel](DEPLOYMENT.md) |
+| **Hosted Web App** | https://brandguard-app.antideploy.app *(see [Deployment](#5-deployment--hosted-notes))* |
 | **Client** | Flutter (`mobile/`) + prebuilt same-origin web bundle (`browser_preview/`) |
 | **Backend** | FastAPI (`backend/`, Python **3.11+**, tested on **3.13**) |
 | **Database & Auth** | Local SQLite + PBKDF2/JWT (active local default) · Supabase PostgreSQL + Auth + private Storage (optional cloud mode) |
@@ -79,7 +79,7 @@ Copy-Item mobile\build\web\* browser_preview\ -Recurse -Force
 ```
 
 ### C. Run the Flutter Mobile/Desktop App
-Pass the actual deployed domain or a local development URL via `API_BASE`:
+Native builds default to `https://brandguard-app.antideploy.app`. Pass `API_BASE` explicitly for local development:
 ```bash
 cd mobile
 flutter pub get --enforce-lockfile
@@ -91,7 +91,7 @@ flutter run --dart-define=API_BASE=http://10.0.2.2:8000
 flutter run -d chrome --dart-define=API_BASE=http://127.0.0.1:8000
 
 # Against hosted backend:
-flutter run --dart-define=API_BASE=https://YOUR-PROJECT.vercel.app
+flutter run --dart-define=API_BASE=https://brandguard-app.antideploy.app
 ```
 
 ### D. Enable Grounded AI Verification (Local Mode)
@@ -122,7 +122,7 @@ When running locally with `backend/.env` unset (or `SEED_DEMO_USERS=true`), two 
 
 > **Governance invariant:** Creators cannot approve their own checks (`409 Conflict` enforced by the API and database policy).
 
-### Hosted Supabase Mode
+### Hosted Supabase Mode (`https://brandguard-app.antideploy.app`)
 - Public local-demo credentials (`creator@brandguard.demo` / `Demo@12345`) **do not** work in Supabase mode.
 - Earlier hosted evaluation credentials expired on **2026-11-17 01:30:31 IST** (`2026-11-16T20:00:31Z`).
 - For hosted access, use **Create account → confirm email → Sign In** (grants Creator), and promote a trusted Reviewer/Admin via Supabase `app_metadata.brandguard_role` or `python manage.py create-user`. See [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md).
@@ -148,14 +148,14 @@ All private endpoints require `Authorization: Bearer ACCESS_TOKEN`. Full OpenAPI
 
 ## 5. Deployment & Hosted Notes
 
-- Vercel entrypoint: **`main.py`**. Optional Docker entrypoint: **`serve.py`** (enforces `AUTH_PROVIDER=supabase` and `SEED_DEMO_USERS=false`, serves `browser_preview/` same-origin via `app.web:app`).
+- Production entrypoint: **`serve.py`** (enforces `AUTH_PROVIDER=supabase` and `SEED_DEMO_USERS=false`, serves `browser_preview/` same-origin via `app.web:app`).
 - Container build: **`Dockerfile`** installs `tesseract-ocr` and `backend/requirements.txt` on `python:3.13-slim`.
 - Detailed operational checklists:
   - [START_HERE.md](START_HERE.md) — quickest local & hosted launch checklist
-  - [DEPLOYMENT.md](DEPLOYMENT.md) — Vercel setup, Round 3 redeploy checklist, and Supabase bucket MIME note
+  - [DEPLOYMENT.md](DEPLOYMENT.md) — Antideploy setup, Round 3 redeploy checklist, and Supabase bucket MIME note
   - [docs/PROJECT_GUIDE.md](docs/PROJECT_GUIDE.md) — architecture, database/locking model, security boundaries
   - [docs/AI_SETUP.md](docs/AI_SETUP.md) — OpenRouter / OpenAI setup, free `:free` model notes, and grounded-output contract
-  - [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md) — Supabase Postgres, Storage, and Auth email hook
+  - [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md) & [docs/LIVE_SUPABASE_STATUS.md](docs/LIVE_SUPABASE_STATUS.md) — Supabase Postgres, Storage, and Auth email hook
 
 ---
 

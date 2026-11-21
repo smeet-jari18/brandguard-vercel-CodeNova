@@ -2,13 +2,15 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../app/app_theme.dart';
 import '../../app/ui/app_widgets.dart';
+import '../../app/ui/brand_showcase.dart';
 import '../../core/auth/session.dart';
 import '../../core/network/brandguard_api_service.dart';
 import '../../core/network/document_picker.dart';
 
 class LibraryScreen extends StatefulWidget {
-  const LibraryScreen({super.key, required this.kind, required this.title});
+  const LibraryScreen({super.key, required this.kind, required this.title, this.initialBrandName = 'Acme'});
   final String kind, title;
+  final String initialBrandName;
   @override
   State<LibraryScreen> createState() => _LibraryScreenState();
 }
@@ -26,6 +28,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   @override
   void initState() {
     super.initState();
+    _brand.text = widget.initialBrandName;
     _load();
   }
 
@@ -35,12 +38,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
     super.dispose();
   }
 
+  int _requestGeneration = 0;
+
   Future<void> _load() async {
+    final generation = ++_requestGeneration;
+    setState(() { _loading = true; _error = null; });
     try {
       final data = await BrandGuardApiService.getJson(
         '$_base?brand_name=${Uri.encodeQueryComponent(_brand.text.trim())}',
       );
-      if (!mounted) return;
+      if (!mounted || generation != _requestGeneration) return;
       setState(() {
         _items = (data['items'] as List? ?? [])
             .map((e) => Map<String, dynamic>.from(e))
@@ -49,7 +56,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
         _error = null;
       });
     } catch (e) {
-      if (mounted) {
+      if (mounted && generation == _requestGeneration) {
         setState(() {
           _loading = false;
           _error = e.toString();
@@ -595,6 +602,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     : isFacts
                     ? 'Upload private documents and mark only truly verified evidence as eligible.'
                     : 'Descriptive brand guidance. Enforceable patterns belong in Rules.',
+              ),
+              const SizedBox(height: 14),
+              BrandShowcase(
+                selectedBrand: _brand.text,
+                onSelected: (brand) async {
+                  final selected = brand.isEmpty ? await promptBrandName(context) : brand;
+                  if (!mounted || selected == null) return;
+                  setState(() => _brand.text = selected);
+                  _load();
+                },
               ),
               const SizedBox(height: 14),
               SurfaceCard(

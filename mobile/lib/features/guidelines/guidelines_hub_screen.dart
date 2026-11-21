@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../app/app_theme.dart';
 import '../../app/ui/app_widgets.dart';
+import '../../app/ui/brand_showcase.dart';
 import '../../app/ui/brandguard_shell.dart';
 import '../../core/auth/session.dart';
 import '../../core/network/brandguard_api_service.dart';
@@ -26,6 +27,8 @@ class _GuidelinesHubScreenState extends State<GuidelinesHubScreen> {
   Map<String, dynamic>? _guidelines, _rules, _facts;
   String? _error;
   bool _loading = true;
+  String _brandName = 'Acme';
+  int _requestGeneration = 0;
 
   @override
   void initState() {
@@ -34,19 +37,21 @@ class _GuidelinesHubScreenState extends State<GuidelinesHubScreen> {
   }
 
   Future<void> _load() async {
+    final generation = ++_requestGeneration;
+    final brandName = _brandName;
     setState(() => _loading = true);
     Object? lastError;
     for (var attempt = 0; attempt < 2; attempt++) {
       try {
         // The library endpoints are brand-scoped query endpoints; calling the
         // bare paths returns 404, so the brand is always supplied explicitly.
-        const query = '?brand_name=Acme';
+        final query = '?brand_name=${Uri.encodeQueryComponent(brandName)}';
         final results = await Future.wait([
           BrandGuardApiService.getJson('/api/v1/library/guidelines$query'),
           BrandGuardApiService.getJson('/api/v1/library/rules$query'),
           BrandGuardApiService.getJson('/api/v1/library/facts$query'),
         ]);
-        if (!mounted) return;
+        if (!mounted || generation != _requestGeneration) return;
         setState(() {
           _guidelines = results[0];
           _rules = results[1];
@@ -62,7 +67,7 @@ class _GuidelinesHubScreenState extends State<GuidelinesHubScreen> {
         }
       }
     }
-    if (!mounted) return;
+    if (!mounted || generation != _requestGeneration) return;
     setState(() {
       _error = lastError?.toString() ?? 'The server did not respond.';
       _loading = false;
@@ -100,14 +105,24 @@ class _GuidelinesHubScreenState extends State<GuidelinesHubScreen> {
             eyebrow: 'AUDIT CLEARANCE',
             eyebrowTone: Tone.success,
             title: 'Brand Guidelines',
-            subtitle: 'Shared org-wide guidance, enforceable rules and verified sources for Acme — visible across all team accounts.',
+            subtitle: 'Shared guidance, enforceable rules and available sources for $_brandName. Your private submissions remain separate.',
             trailing: isReviewer
                 ? IconButton(
                     tooltip: 'Manage rules',
-                    onPressed: () => _open(const UploadRuleScreen()),
+                    onPressed: () => _open(UploadRuleScreen(initialBrandName: _brandName)),
                     icon: const Icon(Icons.tune_rounded),
                   )
                 : null,
+          ),
+          const SizedBox(height: 16),
+          BrandShowcase(
+            selectedBrand: _brandName,
+            onSelected: (brand) async {
+              final selected = brand.isEmpty ? await promptBrandName(context) : brand;
+              if (!mounted || selected == null) return;
+              setState(() => _brandName = selected);
+              _load();
+            },
           ),
           const SizedBox(height: 16),
           if (_loading)
@@ -161,7 +176,7 @@ class _GuidelinesHubScreenState extends State<GuidelinesHubScreen> {
                   ? 'Add, edit or archive guidance entries.'
                   : 'Read-only: guidance is managed by reviewers.',
               tone: Tone.navy,
-              onTap: () => _open(const BrandGuidelinesScreen()),
+              onTap: () => _open(BrandGuidelinesScreen(initialBrandName: _brandName)),
             ),
             const SizedBox(height: 8),
             NavigationRow(
@@ -169,7 +184,7 @@ class _GuidelinesHubScreenState extends State<GuidelinesHubScreen> {
               title: 'Enforceable Rules',
               subtitle: 'Rule versions, patterns and severities used by /brand/check.',
               tone: Tone.success,
-              onTap: () => _open(const UploadRuleScreen()),
+              onTap: () => _open(UploadRuleScreen(initialBrandName: _brandName)),
             ),
             const SizedBox(height: 8),
             NavigationRow(
@@ -178,7 +193,7 @@ class _GuidelinesHubScreenState extends State<GuidelinesHubScreen> {
               subtitle:
                   'Upload private documents and verify eligible evidence.',
               tone: Tone.info,
-              onTap: () => _open(const FactSourcesScreen()),
+              onTap: () => _open(FactSourcesScreen(initialBrandName: _brandName)),
             ),
             const SizedBox(height: 8),
             NavigationRow(

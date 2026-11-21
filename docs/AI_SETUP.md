@@ -47,8 +47,8 @@ By default, `AI_PROVIDER=disabled` so deterministic rules, temporal/channel reso
   AI_MODEL=gpt-5.4-mini
   ```
 
-### Vercel
-Set provider variables in Vercel Project Settings and redeploy. Never put keys in Flutter or Git.
+### Optional Hosted Mode (Antideploy — Deferred/Optional)
+- Antideploy's hosted `OPENROUTER_API_KEY` path remains server-side only with `AI_PROVIDER=disabled` while wallet balance is **₹0** (`https://antideploy.com/settings/billing#add-money` if ever enabled on hosted Antideploy). Do **not** copy keys into `mobile/` or git.
 
 ---
 

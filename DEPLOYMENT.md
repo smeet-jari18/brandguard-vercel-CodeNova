@@ -1,44 +1,95 @@
-# Deploy BrandGuard on Vercel
+# BrandGuard — Live Deployment Handoff & Round 3 Redeploy Guide
 
-**One project, one domain:** Vercel serves the committed Flutter web build at `/`; a Python 3.13 FastAPI function handles `/api/v1/*`, `/auth/confirm`, `/auth/reset`, `/docs` and `/health`. Supabase stores accounts, database rows and private files. No Flutter SDK, Docker daemon, or local SQLite database is required on Vercel.
+> **Round 3 (v3.0.0) Note:** Cloud Supabase / Antideploy redeploy is currently **optional / deferred** in favor of local SQLite development (`START_HERE.md`). The verification counts (`113` backend / `49` Flutter / `55` API / `17` email) below describe the initial `v2` Antideploy deployment in `validation/antideploy/`. Round 3 adds server-side grounding, temporal rules, conflicts, coded overrides, clarity tickets, visual/OCR inspection (`tesseract-ocr` in `Dockerfile`), real-time creator/reviewer workflows (`changes_requested` + Edit & Resubmit, 60-minute `POST /api/v1/reviews/{id}/amend` decision reversal + `REVOKED` seals, in-app Password change, two-step inspect → Submit for authorised review, newest-first queues, creator/timestamp metadata, Light-mode default, Unseen/Seen notifications, Remember me session restore, non-destructive `Edit as new check` for Approved submissions, Profile stack-card cleanup, and Fact Sources `Test AI verification`), and updated Flutter screens (`153` backend pytest cases / `10` Flutter test files). Follow the **Round 3 Redeploy Checklist** below if/when updating the live URL.
 
-## 1 · Import the cleaned source
+## Live Links
 
-Extract the ZIP and push its contents (including dotfiles) to a **new Git repository**, with `vercel.json` at its root. Alternatively, apply the supplied migration patch to a clean checkout of the original commit `d2768d7aa51023b5129fd51c0c65be134bcf92fb`, then commit and push. Simply overlaying a ZIP on the old repo **does not delete** obsolete tracked files.
+- **App:** https://brandguard-app.antideploy.app
+- **Health:** https://brandguard-app.antideploy.app/health
+- **Antideploy dashboard:** https://antideploy.com/app/24f672f9-ef5a-4c45-8043-b98af546e6ad
+- **App ID (`.antideploy.json`):** `24f672f9-ef5a-4c45-8043-b98af546e6ad` (always redeploy to this same app; never create a duplicate app)
 
-In **Vercel → Add New → Project**, import the updated repo. **Root Directory: `.` · Framework: FastAPI**. Keep install/build/output overrides off: `vercel.json` supplies the build command, which copies `browser_preview/` to `public/`. Do not choose `mobile/`, `backend/` or `browser_preview/` as root. Decide which stable production domain you will use (not a changing preview URL).
+---
 
-## 2 · Connect the intended Supabase project
+## Round 3 Redeploy Checklist
 
-Reuse the BrandGuard project if it already holds your data. For a new project, run `backend/migrations/001_core.sql`, then `backend/supabase/002_private_storage.sql`, then `backend/supabase/003_temporary_demo_expiry.sql`. For an existing database, verify migrations and policies rather than resetting it. See [Supabase setup](docs/SUPABASE_SETUP.md) for the bucket's image MIME types and trusted role assignment.
+1. **Rebuild & sync `browser_preview/`** so `serve.py` / `Dockerfile` ship the Round 3 Flutter UI (including the `My profile` fix):
+   ```powershell
+   cd mobile
+   flutter analyze
+   flutter test
+   flutter build web --no-web-resources-cdn
+   cd ..
+   Remove-Item browser_preview\* -Recurse -Force
+   Copy-Item mobile\build\web\* browser_preview\ -Recurse -Force
+   ```
+2. **Allow banner image MIME types in Supabase Storage** *(required for Round 3 image uploads in cloud mode)*:
+   Run in Supabase SQL Editor on `jtidayzktuzpjydshsva`:
+   ```sql
+   UPDATE storage.buckets
+   SET allowed_mime_types = ARRAY[
+     'text/plain', 'text/markdown', 'application/pdf',
+     'image/png', 'image/jpeg', 'image/webp'
+   ]
+   WHERE id = 'brandguard-files';
+   ```
+   *(Already reflected in `backend/supabase/002_private_storage.sql` comments/instructions in [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md).)*
+3. **Check `Dockerfile` & `backend/requirements.txt`:**
+   - `Dockerfile` installs `tesseract-ocr` (`apt-get install`) and `pillow`, `pytesseract`, `numpy` from `backend/requirements.txt`.
+4. **Provision fresh judge / reviewer accounts:**
+   - Earlier temporary evaluation credentials (`brandguard_access_until = 2026-11-16T20:00:31Z`) expired on **17 November 2026, 01:30:31 IST**.
+   - Create fresh accounts via **Create account → confirm email → Sign In** (Creator) and assign Reviewer via Supabase `app_metadata.brandguard_role = "reviewer"` or `python manage.py create-user`.
+5. **Redeploy to the existing Antideploy app** (and optionally add AI credits/env vars + at least 1 **Verified Fact Source** in the UI if testing live AI).
 
-Add these under **Vercel → Project Settings → Environment Variables → Production**. Replace every example with your own value. Use a separate test database for Preview, or leave Preview unconfigured. Never add database passwords or private keys to Flutter, Git or chat.
+---
 
-| Variable | Value |
+## Initial Deployment Verification (Historical `v2` Baseline)
+
+| Area | Verified result |
 |---|---|
-| `AUTH_PROVIDER` | `supabase` |
-| `SEED_DEMO_USERS` | `false` |
-| `SUPABASE_URL` | Your project's HTTPS API URL |
-| `SUPABASE_PUBLISHABLE_KEY` | Its publishable (or legacy anon) key, not the service role key |
-| `DATABASE_URL` | Your PostgreSQL **session pooler** URI; URL-encode the password. Example format below. |
-| `SUPABASE_STORAGE_BUCKET` | `brandguard-files` (private) |
-| `PUBLIC_APP_URL` | Your stable production origin, e.g. `https://YOUR-PROJECT.vercel.app` |
-| `AUTH_REDIRECT_URL` | The same origin followed by `/auth/reset` |
-| `AI_PROVIDER` | `disabled` unless intentionally enabling a paid or free provider |
+| Deployment | Custom Dockerfile built and deployed successfully, HTTPS public URL tested |
+| Runtime | Non-root Python 3.13, one Uvicorn worker, `app.web:app`, platform PORT/0.0.0.0 |
+| Mobile-first UI | Same Flutter source in `mobile/`; bundled CanvasKit web build serves on the API origin |
+| Database/Auth/files | Existing BrandGuard Supabase preserved, verified-TLS PostgreSQL, private Storage |
+| Roles | Creator and Reviewer actual rendered browser sign-in at 430×932, real dashboard responses |
+| Workflows | **55 public API acceptance checks passed**, including files, drafts, scan, approvals, notifications and sessions |
+| Auth email | Signed Supabase Send Email Hook → Antideploy relay; sender `brandguard-app@mail.antideploy.com` |
+| Delivery | **5 accepted / 5 provider-reported delivered**, no bounces/complaints in the test snapshot |
+| Callbacks/recovery | **17 real checks passed**: confirmation, reset, old/new password, logout, one-use link denial |
+| Regressions | **113 backend + 49 Flutter tests passed; analyzer clean** (pre-Round-3 baseline) |
+| Security | CSP/header finding fixed and redeployed; automatic and full platform scans had **0 findings** |
+| Cleanup | Temporary Auth users, objects and test-brand rows removed; intended demo/sample preserved |
 
-Example DB format: `postgresql+psycopg://postgres.PROJECT_REF:ENCODED_PASSWORD@POOLER_HOST:5432/postgres?sslmode=verify-full&sslrootcert=certs/supabase-prod-ca-2021.crt&connect_timeout=10`. Use the host and user from **Connect** in your project; verify that its CA matches the bundled public certificate, or supply the correct public CA. Don't disable TLS verification. Same-origin web doesn't require permissive CORS.
+Full historical scan report: https://antideploy.com/security/scan/ee8aaa4a-ac9c-4aff-90ae-b69298559f2d .
 
-## 3 · Cut over login and email
+---
 
-- Supabase → **Authentication → URL Configuration**: set Site URL to `PUBLIC_APP_URL`. Allowlist the full HTTPS URLs ending in `/auth/confirm` and `/auth/reset`.
-- If using the app's signed **Send Email Hook**, point it at `PUBLIC_APP_URL/api/v1/auth/hooks/email`. Set `SUPABASE_EMAIL_HOOK_SECRET` to the matching signing secret in Vercel, plus `RESEND_API_URL=https://api.resend.com`, your own `RESEND_API_KEY`, and `EMAIL_FROM` at a verified sender domain. No keys are injected automatically.
-- Alternatively disable the previous hook, configure your own SMTP delivery in Supabase, and verify the email templates send confirmation and recovery to the intended domain. Don't leave a stale hook enabled. Test with an actual inbox.
-- Rotate or disable any previously published hosted demo credentials before enabling public access. Keep local demo users disabled. Remove retired callback URLs after cutover. Deleting repository files does not turn off an old hosting account.
+## Access & Role Rules
 
-## 4 · Deploy and verify
+- Public signup grants **Creator** (`role=creator`) and requires email confirmation.
+- Public signup cannot grant Reviewer/Admin. A trusted administrator must assign `{"brandguard_role": "reviewer"}` in Supabase `app_metadata` (or provision via `manage.py create-user`).
+- Earlier evaluation Creator/Reviewer logins expired on **17 November 2026, 01:30:31 IST** (`2026-11-16T20:00:31Z`). Normal accounts without `brandguard_access_until` do not expire.
 
-Click **Deploy** (redeploy after changing environment settings). Check `/` loads Flutter, `/health` returns JSON, `/api/v1/auth/config` reports `supabase` and `demo_accounts_enabled: false`, and `/auth/reset` displays the reset page. Then confirm a new signup, sign in, reset a password and upload a small private test file. A green health check alone doesn't verify auth email or Storage. If root loads but API returns 500, check Function Logs, pooler credentials, TLS certificate and auth settings.
+---
 
-**Runtime limits:** This setup does not package the native Tesseract executable: image OCR reports `tesseract_not_installed` if absent. Use a runtime with Tesseract if OCR is required. Vercel Functions' request/response payload limit is 4.5 MB, below the app's 5 MB file limit: keep uploads under 4 MB including multipart overhead. Larger files need a direct-storage design. In-memory login throttling is per instance; configure provider/edge limits for a public deployment.
+## AI Configuration
 
-For native builds, substitute your real domain in `flutter run --dart-define=API_BASE=https://YOUR-PROJECT.vercel.app`. For web UI changes rebuild `mobile/` with `flutter build web --no-web-resources-cdn` **without** an `API_BASE`, replace `browser_preview/` with the generated web files, and redeploy.
+- Server-side `OPENROUTER_API_KEY` is provisioned on Antideploy (`AI_BASE_URL=https://openrouter.ai/api/v1`, `AI_MODEL=openai/gpt-5.4-mini`).
+- **Default `AI_PROVIDER=disabled`** while wallet balance is **₹0**. Rules, temporal checks, conflicts, OCR/visual checks, clarity tickets, and approvals all work free.
+- To enable paid AI on Antideploy: top up at https://antideploy.com/settings/billing#add-money (**15% fee:** ₹100 credit = ₹115), set `AI_PROVIDER=openrouter` in Antideploy env vars, redeploy, and add + **Verify** a Fact Source in the app. See [docs/AI_SETUP.md](docs/AI_SETUP.md) for free `:free` model testing options too.
+
+---
+
+## Operational Limits & Maintenance
+
+- Native email relay: **20 recipient-addresses per rolling day**, 10 messages/minute, max 5 recipients/message. Supabase auth-email throttle is 20/hour.
+- Site URL is `https://brandguard-app.antideploy.app`; exact `/auth/confirm` and `/auth/reset` redirects are allowlisted; `/api/v1/auth/hooks/email` requires signed Standard Webhooks HMAC validation.
+- Normal runtime holds no Supabase service-role key. `serve.py` runs from `backend/` so `certs/supabase-prod-ca-2021.crt` resolves under `sslmode=verify-full`, and refuses `AUTH_PROVIDER=local` or `SEED_DEMO_USERS=true`.
+- Reuse `.antideploy.json`'s app ID on every deploy; never overwrite native relay/AI platform variables.
+
+Native Flutter client against hosted API:
+
+```sh
+cd mobile
+flutter run --dart-define=API_BASE=https://brandguard-app.antideploy.app
+```

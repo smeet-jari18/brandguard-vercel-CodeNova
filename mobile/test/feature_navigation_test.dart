@@ -93,6 +93,32 @@ void main() {
     await settleTestUi(tester);
   }
 
+  // A lazy ListView may not have built the editor field yet. Scroll its
+  // outer vertical viewport first, then center the target for reliable input.
+  Future<void> reveal(WidgetTester tester, Finder target) async {
+    final vertical = find.byWidgetPredicate(
+      (widget) => widget is Scrollable &&
+          (widget.axisDirection == AxisDirection.down ||
+           widget.axisDirection == AxisDirection.up),
+    );
+    expect(vertical, findsWidgets, reason: 'Expected a vertical page viewport');
+    await tester.scrollUntilVisible(
+      target,
+      160,
+      scrollable: vertical.first,
+      maxScrolls: 40,
+    );
+    await tester.pumpAndSettle();
+    await Scrollable.ensureVisible(
+      tester.element(target),
+      alignment: 0.5,
+      duration: Duration.zero,
+    );
+    await tester.pumpAndSettle();
+    expect(target.hitTestable(), findsOneWidget,
+        reason: 'Target must be on-screen and able to receive input');
+  }
+
   final screens = <String, Widget Function()>{
     'live dashboard': () => const HomeDashboardScreen(),
     'workspace': () => const WorkspaceHubScreen(),
@@ -188,7 +214,12 @@ void main() {
       session.signIn(DemoAuth.creator.user, accessToken: 'creator-access');
       http.Request? submitted;
       BrandGuardApiService.clientForTesting = MockClient((request) async {
-        submitted = request;
+        if (request.method == 'POST' && request.url.path == '/api/v1/brand/check') {
+          submitted = request;
+        }
+        if (request.url.path == '/api/v1/brand/preflight') {
+          return http.Response('{"findings":[]}', 200);
+        }
         return http.Response(
           jsonEncode({
             'check_id': 'check-created',
@@ -205,16 +236,13 @@ void main() {
           200,
         );
       });
-      await open(tester, const NewBrandCheckScreen());
+      await open(tester, const NewBrandCheckScreen(initialBrandName: 'Acme'));
+      await reveal(tester, find.byKey(const ValueKey('check-content')));
       await tester.enterText(
         find.byKey(const ValueKey('check-content')),
         '  Exact content\n',
       );
-      await tester.scrollUntilVisible(
-        find.byKey(const ValueKey('run-check')),
-        250,
-        scrollable: find.byType(Scrollable).first,
-      );
+      await reveal(tester, find.byKey(const ValueKey('run-check')));
       await tester.tap(find.byKey(const ValueKey('run-check')));
       await settleTestUi(tester);
       expect(submitted?.headers['Authorization'], 'Bearer creator-access');
@@ -228,8 +256,11 @@ void main() {
     (tester) async {
       http.Request? saved;
       BrandGuardApiService.clientForTesting = MockClient((request) async {
-        saved = request;
-        return http.Response('{"id":"draft-one","revision":4}', 200);
+        if (request.method == 'PUT' && request.url.path == '/api/v1/drafts/draft-one') {
+          saved = request;
+          return http.Response('{"id":"draft-one","revision":4}', 200);
+        }
+        return http.Response('{"findings":[]}', 200);
       });
       await open(
         tester,
@@ -244,15 +275,12 @@ void main() {
           },
         ),
       );
+      await reveal(tester, find.byKey(const ValueKey('check-content')));
       await tester.enterText(
         find.byKey(const ValueKey('check-content')),
         'Changed',
       );
-      await tester.scrollUntilVisible(
-        find.byKey(const ValueKey('save-draft')),
-        250,
-        scrollable: find.byType(Scrollable).first,
-      );
+      await reveal(tester, find.byKey(const ValueKey('save-draft')));
       await tester.tap(find.byKey(const ValueKey('save-draft')));
       await settleTestUi(tester);
       expect(saved?.method, 'PUT');
@@ -456,7 +484,7 @@ void main() {
     }.entries) {
       await open(tester, const GuidelinesHubScreen());
       final tile = find.text(entry.key).last;
-      await tester.scrollUntilVisible(tile, 150);
+      await reveal(tester, tile);
       await tester.tap(tile);
       await settleTestUi(tester);
       expect(find.byType(entry.value), findsOneWidget, reason: entry.key);

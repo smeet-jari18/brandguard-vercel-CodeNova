@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:material_ui/material_ui.dart';
 
 import '../../app/app_theme.dart';
@@ -15,6 +17,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   List<Map<String, dynamic>> _items = [];
   String? _error;
   bool _loading = true;
+  String? _openingNotificationId;
   @override
   void initState() {
     super.initState();
@@ -71,36 +74,73 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   List<Map<String, dynamic>> get _seenItems =>
       _items.where((i) => i['read'] == true).toList();
 
+  Future<void> _persistRead(String id) async {
+    try {
+      // Read acknowledgement must never delay opening the destination.
+      await BrandGuardApiService.request(
+        'PATCH',
+        '/api/v1/notifications/${Uri.encodeComponent(id)}',
+        body: {'read': true},
+      );
+      if (!mounted) return;
+      setState(() {
+        for (final row in _items) {
+          if (row['id']?.toString() == id) row['read'] = true;
+        }
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        for (final row in _items) {
+          if (row['id']?.toString() == id) row['read'] = false;
+        }
+      });
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Could not mark the notification as read. You can still open the check; try again later.'),
+      ));
+    }
+  }
+
   Future<void> _openNotification(Map<String, dynamic> item) async {
+    if (_openingNotificationId != null) return;
     final id = item['id']?.toString() ?? '';
     final unread = item['read'] != true;
     final checkId = item['check_id']?.toString() ?? '';
     final isChangesReq =
         item['title']?.toString().toLowerCase().contains('changes') ?? false;
-
-    if (unread && id.isNotEmpty) {
-      setState(() {
-        item['read'] = true;
-      });
-      await _act('PATCH', '/$id', body: {'read': true});
-    }
-
-    if (checkId.isNotEmpty && mounted) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ReviewQueueScreen(
-            initialTab: isChangesReq ? 'Changes Requested' : 'All',
-            initialCheckId: checkId,
+    setState(() {
+      _openingNotificationId = id;
+      if (unread && id.isNotEmpty) item['read'] = true;
+    });
+    final readUpdate = unread && id.isNotEmpty
+        ? _persistRead(id)
+        : Future<void>.value();
+    try {
+      if (checkId.isNotEmpty) {
+        unawaited(readUpdate);
+        // Navigate immediately: ReviewQueueScreen renders its loading spinner
+        // while it fetches records and opens the requested check details.
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ReviewQueueScreen(
+              initialTab: isChangesReq ? 'Changes Requested' : 'All',
+              initialCheckId: checkId,
+            ),
           ),
-        ),
-      );
-      if (mounted) await _load();
+        );
+        if (mounted) await _load();
+      } else {
+        await readUpdate;
+      }
+    } finally {
+      if (mounted) setState(() => _openingNotificationId = null);
     }
   }
 
   Widget _notificationCard(Map<String, dynamic> item) {
     final unread = item['read'] != true;
+    final opening = _openingNotificationId == (item['id']?.toString() ?? '');
     final checkId = item['check_id']?.toString() ?? '';
     final isChangesReq =
         item['title']?.toString().toLowerCase().contains('changes') ?? false;
@@ -113,7 +153,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             ? AppTheme.info.withValues(alpha: 0.45)
             : AppTheme.border,
         color: unread ? AppTheme.card : AppTheme.background,
-        onTap: () => _openNotification(item),
+        onTap: _openingNotificationId == null ? () => _openNotification(item) : null,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -124,7 +164,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 color: unread ? AppTheme.infoBg : AppTheme.neutralBg,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(
+              child: opening
+                  ? const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Icon(
                 unread
                     ? Icons.notifications_active_rounded
                     : Icons.notifications_none_rounded,
@@ -180,10 +225,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        onPressed: () => _openNotification(item),
+                        onPressed: _openingNotificationId == null ? () => _openNotification(item) : null,
                         icon: const Icon(Icons.open_in_new_rounded, size: 14),
                         label: Text(
-                          isChangesReq ? 'Open & edit check' : 'Open check',
+                          opening ? 'Opening check…' : isChangesReq ? 'Open & edit check' : 'Open check',
                         ),
                       ),
                     ),

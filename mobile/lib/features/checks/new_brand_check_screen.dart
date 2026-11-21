@@ -6,6 +6,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../app/app_theme.dart';
 import '../../app/ui/app_widgets.dart';
+import '../../app/ui/brand_showcase.dart';
 import '../../app/ui/asset_viewer.dart';
 import '../../core/auth/session.dart';
 import '../../core/network/brandguard_api_service.dart';
@@ -44,7 +45,7 @@ class NewBrandCheckScreen extends StatefulWidget {
 
 class _NewBrandCheckScreenState extends State<NewBrandCheckScreen> {
   final _title = TextEditingController(text: 'Untitled draft');
-  final _brand = TextEditingController(text: 'Acme');
+  final _brand = TextEditingController();
   final _content = TextEditingController();
   final List<Map<String, dynamic>> _attachments = [];
   String? _draftId;
@@ -72,13 +73,16 @@ class _NewBrandCheckScreenState extends State<NewBrandCheckScreen> {
       _draftId = draft['id'] as String?;
       _revision = draft['revision'] as int?;
       _title.text = draft['title']?.toString() ?? 'Untitled draft';
-      _brand.text = draft['brand_name']?.toString() ?? 'Acme';
+      _brand.text = draft['brand_name']?.toString() ?? '';
       _content.text = draft['content']?.toString() ?? '';
       _attachments.addAll(
         (draft['attachments'] as List? ?? []).map(
           (e) => Map<String, dynamic>.from(e as Map),
         ),
       );
+    }
+    if ((widget.initialBrandName ?? '').trim().isNotEmpty) {
+      _brand.text = widget.initialBrandName!.trim();
     }
     if (_isResubmit || _isRevisedFromApproved) {
       if ((widget.initialBrandName ?? '').trim().isNotEmpty) {
@@ -771,6 +775,15 @@ class _NewBrandCheckScreenState extends State<NewBrandCheckScreen> {
         ),
       ),
       const SizedBox(height: 10),
+      BrandShowcase(
+        selectedBrand: _brand.text,
+        enabled: !_busy && !_isResubmit,
+        onSelected: (brand) {
+          setState(() => _brand.text = brand);
+          _onDraftChanged();
+        },
+      ),
+      const SizedBox(height: 10),
       TextField(
         key: const ValueKey('check-brand'),
         controller: _brand,
@@ -780,7 +793,7 @@ class _NewBrandCheckScreenState extends State<NewBrandCheckScreen> {
           labelText: 'Brand',
           helperText: _isResubmit
               ? 'Locked to the existing brand check.'
-              : 'Acme ships starter rules. Reviewers can add another brand.',
+              : 'Choose a sample or enter a new brand. A reviewer must add its policies separately.',
           isDense: true,
           prefixIcon: const Icon(Icons.storefront_outlined),
         ),

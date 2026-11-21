@@ -154,7 +154,7 @@
 **Implementation:**
 1. **Dependencies (`backend/requirements.txt` & `Dockerfile`)**:
    - Add `pillow`, `pytesseract`, `numpy` to `backend/requirements.txt`.
-   - Install `tesseract-ocr` in sandbox and add `RUN apt-get update && apt-get install -y --no-install-recommends tesseract-ocr` to `Dockerfile` for optional container builds.
+   - Install `tesseract-ocr` in sandbox and add `RUN apt-get update && apt-get install -y --no-install-recommends tesseract-ocr` to `Dockerfile` so Antideploy builds cleanly.
 2. **Expand File Upload & Metadata (`backend/app/routers/files.py`)**:
    - Support `.png`, `.jpg`, `.jpeg`, `.webp` alongside `.txt`, `.md`, `.pdf` (max 5 MB).
    - For image uploads:

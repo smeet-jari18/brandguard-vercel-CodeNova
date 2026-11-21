@@ -8,9 +8,8 @@
       "cwd": "${workspaceFolder}/mobile",
       "program": "${workspaceFolder}/mobile/lib/main.dart",
       "toolArgs": [
-        "--dart-define=API_BASE=${input:apiBase}"
+        "--dart-define=API_BASE=https://brandguard-app.antideploy.app"
       ]
     }
-  ],
-  "inputs": [{"id":"apiBase","type":"promptString","description":"API URL (use your deployed HTTPS domain for a phone)","default":"http://127.0.0.1:8000"}]
+  ]
 }

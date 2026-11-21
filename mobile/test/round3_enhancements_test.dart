@@ -230,6 +230,9 @@ void main() {
       await tester.tap(find.text('New Brand Check').first);
       await settleTestUi(tester);
 
+      await scrollAndEnsure(tester, find.text('Acme'));
+      await tester.tap(find.text('Acme'));
+      await tester.pump();
       await scrollAndEnsure(tester, find.byKey(const ValueKey('check-content')));
       await tester.enterText(
         find.byKey(const ValueKey('check-content')),
