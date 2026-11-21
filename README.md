@@ -1,4 +1,4 @@
-# BrandGuard — Grounded, Time-Aware & Multimodal Brand Governance (v3.0.0 / Round 3)
+# BrandGuard — Grounded, Time-Aware & Multimodal Brand Governance (v3.0.0 / Round 3)....
 
 **Tagline:** *No finding without evidence. No approval without a version.*
 
