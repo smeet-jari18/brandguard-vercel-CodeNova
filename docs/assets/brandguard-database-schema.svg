@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="500" viewBox="0 0 1100 500">
+<rect width="1100" height="500" rx="18" fill="#0b1220"/>
+<style>text{font-family:Arial,sans-serif}.title{fill:#f5f7fb;font-weight:700;font-size:26px}.sub{fill:#aebed2;font-size:15px}.head{fill:#ffffff;font-weight:700;font-size:19px}.field{fill:#e5edf7;font-size:17px}.type{fill:#8cc8ff;font-size:15px}</style>
+<text x="35" y="49" class="title">BrandGuard — Physical Application Schema</text>
+<text x="35" y="80" class="sub">Two SQL tables. Domain relationships live inside JSON payloads and are checked by the application.</text>
+<rect x="35" y="112" width="495" height="272" rx="12" fill="#162338"/>
+<path d="M47 112 H518 Q530 112 530 124 V166 H35 V124 Q35 112 47 112" fill="#087e8b"/>
+<text x="55" y="147" class="head">bg_entities</text>
+<text x="55" y="202" class="field">collection</text>
+<text x="245" y="202" class="type">string · PK (part 1)</text>
+<text x="55" y="250" class="field">entity_id</text>
+<text x="245" y="250" class="type">string · PK (part 2)</text>
+<text x="55" y="298" class="field">position</text>
+<text x="245" y="298" class="type">integer · ordering</text>
+<text x="55" y="346" class="field">payload</text>
+<text x="245" y="346" class="type">JSON · entity content</text>
+<rect x="570" y="112" width="495" height="272" rx="12" fill="#162338"/>
+<path d="M582 112 H1053 Q1065 112 1065 124 V166 H570 V124 Q570 112 582 112" fill="#087e8b"/>
+<text x="590" y="147" class="head">bg_documents</text>
+<text x="590" y="202" class="field">name</text>
+<text x="780" y="202" class="type">string · primary key</text>
+<text x="590" y="250" class="field">payload</text>
+<text x="780" y="250" class="type">JSON · configuration</text>
+<text x="35" y="426" class="sub">No declared SQL foreign key between these tables. Supabase Auth and object storage are separate.</text>
+<text x="35" y="458" class="sub">Source: backend/app/database.py · See the README logical ER diagram for payload-level relationships.</text>
+</svg>
